@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Painel de Indicações</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      color: #222;
+      margin: 0;
+      padding: 40px;
+    }
+
+    h1 {
+      color: #b00020; /* vermelho escuro */
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .container {
+      max-width: 1100px;
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      margin: auto;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 15px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-sizing: border-box;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    th, td {
+      padding: 14px 10px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #b00020; /* vermelho */
+      color: white;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f9f9f9; /* cinza claro */
+    }
+
+    tr:hover {
+      background-color: #eee;
+    }
+
+    @media (max-width: 768px) {
+      table, thead, tbody, th, td, tr {
+        display: block;
+      }
+
+      th {
+        display: none;
+      }
+
+      tr {
+        margin-bottom: 15px;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        padding: 10px;
+      }
+
+      td {
+        border: none;
+        position: relative;
+        padding-left: 50%;
+        margin-bottom: 10px;
+      }
+
+      td::before {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        font-weight: bold;
+        content: attr(data-label);
+        color: #333;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Painel de Indicações - Compra Certa Repasse</h1>
+    <input type="text" id="search" placeholder="🔍 Buscar por nome, CPF ou código..." onkeyup="filtrarTabela()">
+
+    <table id="tabela">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>CPF</th>
+          <th>Email</th>
+          <th>Telefone</th>
+          <th>Código</th>
+          <th>Data</th>
+        </tr>
+      </thead>
+      <tbody id="corpoTabela"></tbody>
+    </table>
+  </div>
+
+  <script>
+    const url = 'https://script.google.com/macros/s/AKfycbwP1XhpDYmw0QJU7605cZ6FjmbJyNk5bDnRY0qK7lwMlDqyxAbqU5nIuYNq47YX4GJy3Q/exec';
+
+    fetch(url)
+      .then(res => res.json())
+      .then(dados => {
+        const corpo = document.getElementById('corpoTabela');
+        dados.forEach(item => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td data-label="Nome">${item.nome || ''}</td>
+            <td data-label="CPF">${item.cpf || ''}</td>
+            <td data-label="Email">${item.email || ''}</td>
+            <td data-label="Telefone">${item.telefone || ''}</td>
+            <td data-label="Código">${item["codigo de indicação"] || ''}</td>
+            <td data-label="Data">${new Date(item.data).toLocaleString() || ''}</td>
+          `;
+          corpo.appendChild(tr);
+        });
+      })
+      .catch(error => {
+        alert("Erro ao carregar dados: " + error.message);
+      });
+
+    function filtrarTabela() {
+      const filtro = document.getElementById("search").value.toLowerCase();
+      const linhas = document.querySelectorAll("#tabela tbody tr");
+
+      linhas.forEach(linha => {
+        const texto = linha.innerText.toLowerCase();
+        linha.style.display = texto.includes(filtro) ? "" : "none";
+      });
+    }
+  </script>
+</body>
+</html>
